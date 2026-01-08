@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "870957871890",
+    "project_id": "teng-app-2345",
+    "storage_bucket": "teng-app-2345.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870957871890:android:2a187629b69d7083ce39cb",
+        "android_client_info": {
+          "package_name": "com.example.ro_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwOQa7JBuh6ns9ZizrgVJ-kwHbndbHAxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

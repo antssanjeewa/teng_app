@@ -1,4 +1,4 @@
-import '../../models/user_model.dart';
+import '../models/user_model.dart';
 
 class UserRepositoryImpl {
   Future<UserModel?> getUser() async => null;
