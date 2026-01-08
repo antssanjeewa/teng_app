@@ -37,7 +37,7 @@ class ProfileView extends StatelessWidget {
                       const CircleAvatar(
                         radius: 55,
                         backgroundImage: NetworkImage(
-                          'https://via.placeholder.com/150',
+                          'https://picsum.photos/200/300',
                         ), // Replace with image
                       ),
                       Positioned(

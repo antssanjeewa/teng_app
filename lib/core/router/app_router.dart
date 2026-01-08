@@ -2,6 +2,7 @@ import 'package:Tisera_Engineering/presentation/features/locations/views/locatio
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/datasources/remote/firebase_auth_service.dart';
 import '../../presentation/features/locations/views/location_list_view.dart';
 import 'route_names.dart';
 
@@ -22,8 +23,12 @@ class AppRouter {
   static final GlobalKey<NavigatorState> _shellNavigatorKey =
       GlobalKey<NavigatorState>();
 
+  // Auth service instance for router authentication state
+  static final AuthService authService = AuthService();
+
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
+    refreshListenable: authService,
     initialLocation: RouteNames.splash,
     debugLogDiagnostics: true,
 
@@ -98,15 +103,19 @@ class AppRouter {
     /// AUTH GUARD (Firebase-ready)
     /// -------------------------------
     redirect: (context, state) {
-      // TODO: Replace with FirebaseAuth check
-      // final bool isLoggedIn = false;
+      final bool loggedIn = authService.isAuthenticated;
+      final bool isLoggingIn = state.matchedLocation == RouteNames.login;
+      final bool isSplashing = state.matchedLocation == RouteNames.splash;
 
-      // final bool isLoggingIn = state.matchedLocation == RouteNames.login;
+      if (!authService.isInitialized) return RouteNames.splash;
 
-      // if (!isLoggedIn && !isLoggingIn) {
-      //   return RouteNames.login;
-      // }
+      // 1. If not logged in and not on the login page, force go to /login
+      if (!loggedIn) return RouteNames.login;
 
+      // 2. If logged in and trying to go to login page, redirect to /home
+      if (loggedIn && (isLoggingIn || isSplashing)) return RouteNames.home;
+
+      // 3. No redirect needed
       return null;
     },
   );

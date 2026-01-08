@@ -1,17 +1,21 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
 // import '../../data/datasources/remote/firebase/firebase_auth_service.dart';
 // import '../../data/datasources/remote/firebase/firestore_service.dart';
 
+import '../../data/datasources/remote/firebase_auth_service.dart';
+
 // import '../../data/repositories/user_repository_impl.dart';
+import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/get_user_usecase.dart';
 
-// import '../../presentation/features/auth/viewmodels/login_viewmodel.dart';
+import '../../presentation/features/auth/viewModels/login_view_model.dart';
 
 class ProviderSetup {
   ProviderSetup._();
@@ -20,16 +24,14 @@ class ProviderSetup {
     /// --------------------------------
     /// Firebase Core SDK Instances
     /// --------------------------------
-    // Provider<FirebaseAuth>(create: (_) => FirebaseAuth.instance),
+    Provider<FirebaseAuth>(create: (_) => FirebaseAuth.instance),
 
     // Provider<FirebaseFirestore>(create: (_) => FirebaseFirestore.instance),
 
     /// --------------------------------
     /// Firebase Service Wrappers
     /// --------------------------------
-    // Provider<FirebaseAuthService>(
-    //   create: (context) => FirebaseAuthService(context.read<FirebaseAuth>()),
-    // ),
+    ChangeNotifierProvider<AuthService>(create: (context) => AuthService()),
 
     // Provider<FirestoreService>(
     //   create: (context) => FirestoreService(context.read<FirebaseFirestore>()),
@@ -38,12 +40,9 @@ class ProviderSetup {
     /// --------------------------------
     /// Repositories
     /// --------------------------------
-    // Provider<UserRepository>(
-    //   create: (context) => UserRepositoryImpl(
-    //     authService: context.read<FirebaseAuthService>(),
-    //     firestoreService: context.read<FirestoreService>(),
-    //   ),
-    // ),
+    Provider<AuthRepository>(create: (context) => AuthRepositoryImpl()),
+
+    // Provider<UserRepository>(create: (context) => UserRepositoryImpl()),
 
     /// --------------------------------
     /// Use Cases
@@ -55,8 +54,9 @@ class ProviderSetup {
     /// --------------------------------
     /// ViewModels
     /// --------------------------------
-    // ChangeNotifierProvider<LoginViewModel>(
-    //   create: (context) => LoginViewModel(context.read<GetUserUseCase>()),
-    // ),
+    ChangeNotifierProvider<LoginViewModel>(
+      create: (context) =>
+          LoginViewModel(authRepository: context.read<AuthRepository>()),
+    ),
   ];
 }

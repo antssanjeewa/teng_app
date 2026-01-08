@@ -282,7 +282,7 @@ class JobsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     image: const DecorationImage(
                       image: NetworkImage(
-                        'https://via.placeholder.com/60',
+                        'hhttps://picsum.photos/200/300',
                       ), // Replace with RO unit image
                       fit: BoxFit.cover,
                     ),

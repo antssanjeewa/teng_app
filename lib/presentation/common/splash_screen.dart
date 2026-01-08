@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/router/route_names.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_sizes.dart';
 
@@ -15,14 +13,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
-  }
-
-  void _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3));
-    if (mounted) {
-      GoRouter.of(context).go(RouteNames.login);
-    }
   }
 
   @override
