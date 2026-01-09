@@ -1,3 +1,4 @@
+import 'package:Tisera_Engineering/data/datasources/local/data_provider.dart';
 import 'package:Tisera_Engineering/presentation/features/jobs/views/job_create_view.dart';
 import 'package:Tisera_Engineering/presentation/features/locations/views/location_create_view.dart';
 import 'package:Tisera_Engineering/presentation/features/locations/views/location_details_view.dart';
@@ -27,10 +28,11 @@ class AppRouter {
 
   // Auth service instance for router authentication state
   static final AuthService authService = AuthService();
+  static final DataProvider dataProvider = DataProvider();
 
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    refreshListenable: authService,
+    refreshListenable: Listenable.merge([authService, dataProvider]),
     initialLocation: RouteNames.splash,
     debugLogDiagnostics: true,
 
@@ -121,7 +123,7 @@ class AppRouter {
       final bool isLoggingIn = state.matchedLocation == RouteNames.login;
       final bool isSplashing = state.matchedLocation == RouteNames.splash;
 
-      if (!authService.isInitialized) return RouteNames.splash;
+      if (!dataProvider.isInitialized) return RouteNames.splash;
 
       // 1. If not logged in and not on the login page, force go to /login
       if (!loggedIn) return RouteNames.login;
