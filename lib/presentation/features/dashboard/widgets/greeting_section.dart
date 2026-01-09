@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/spacing.dart';
 
-class GreetingSection extends StatelessWidget {
+class GreetingSection extends StatefulWidget {
   const GreetingSection({super.key});
+
+  @override
+  State<GreetingSection> createState() => _GreetingSectionState();
+}
+
+class _GreetingSectionState extends State<GreetingSection> {
+  late String _currentDate;
+  final String _userName = 'Technician';
+
+  @override
+  void initState() {
+    super.initState();
+    _currentDate = _formatDate();
+  }
+
+  String _formatDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('EEEE, d\'th\' MMM yyyy');
+    return formatter.format(now);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +42,14 @@ class GreetingSection extends StatelessWidget {
             ),
           ),
           Text(
-            'Technician',
+            _userName,
             style: AppTextStyles.headline.copyWith(
               color: AppColors.textPrimary,
             ),
           ),
           Spacing.v8,
           Text(
-            'Monday, 24th Oct 2023',
+            _currentDate,
             style: AppTextStyles.subHeadline.copyWith(
               color: AppColors.textMuted,
             ),

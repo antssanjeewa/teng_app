@@ -38,7 +38,7 @@ class DashboardView extends StatelessWidget {
               children: [
                 DashboardCard(
                   title: 'TOTAL INSTALLED',
-                  value: '1,240',
+                  value: 1240,
                   icon: Icons.water_drop,
                   color: AppColors.primary,
                   onTap: () =>
@@ -46,7 +46,7 @@ class DashboardView extends StatelessWidget {
                 ),
                 DashboardCard(
                   title: 'PENDING REPAIRS',
-                  value: '5',
+                  value: 5,
                   icon: Icons.build,
                   color: AppColors.urgent,
                   badge: 'URGENT',
@@ -55,14 +55,14 @@ class DashboardView extends StatelessWidget {
                 ),
                 DashboardCard(
                   title: 'DUE SOON',
-                  value: '3',
+                  value: 3,
                   icon: Icons.calendar_today,
                   color: AppColors.warning,
                   onTap: () => GoRouter.of(context).go(RouteNames.jobs),
                 ),
                 DashboardCard(
                   title: 'INVENTORY',
-                  value: '2 Items',
+                  value: 2,
                   icon: Icons.inventory,
                   badge: 'LOW',
                   badgeColor: AppColors.low,

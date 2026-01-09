@@ -9,10 +9,30 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _progressAnimation;
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+
+    _progressAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -86,11 +106,18 @@ class _SplashScreenState extends State<SplashScreen> {
                   borderRadius: BorderRadius.circular(
                     AppSizes.progressBarBorderRadius,
                   ),
-                  child: const LinearProgressIndicator(
-                    value: 0.9, // Adjust based on your loading logic
-                    backgroundColor: AppColors.surfaceDark,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
-                    minHeight: AppSizes.progressBarHeight,
+                  child: AnimatedBuilder(
+                    animation: _progressAnimation,
+                    builder: (context, child) {
+                      return LinearProgressIndicator(
+                        value: _progressAnimation.value,
+                        backgroundColor: AppColors.surfaceDark,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.accent,
+                        ),
+                        minHeight: AppSizes.progressBarHeight,
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),

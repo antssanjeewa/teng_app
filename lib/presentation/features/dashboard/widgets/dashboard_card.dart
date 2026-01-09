@@ -4,9 +4,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_sizes.dart';
 
-class DashboardCard extends StatelessWidget {
+class DashboardCard extends StatefulWidget {
   final String title;
-  final String value;
+  final double value;
   final IconData icon;
   final Color? color;
   final String? badge;
@@ -25,9 +25,55 @@ class DashboardCard extends StatelessWidget {
   });
 
   @override
+  State<DashboardCard> createState() => _DashboardCardState();
+}
+
+class _DashboardCardState extends State<DashboardCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _countAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimation();
+  }
+
+  void _initializeAnimation() {
+    // Parse the numeric value from the string
+    final numValue = widget.value;
+
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _countAnimation = Tween<double>(begin: 0, end: numValue).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void didUpdateWidget(DashboardCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _animationController.dispose();
+      _initializeAnimation();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       borderRadius: BorderRadius.circular(AppSizes.containerBorderRadius),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -40,30 +86,30 @@ class DashboardCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: (color ?? AppColors.primary).withAlpha(15),
+                    color: (widget.color ?? AppColors.primary).withAlpha(15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    icon,
-                    color: color ?? AppColors.textPrimary,
+                    widget.icon,
+                    color: widget.color ?? AppColors.textPrimary,
                     size: 28,
                   ),
                 ),
                 const Spacer(),
-                if (badge != null)
+                if (widget.badge != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: badgeColor?.withAlpha(50),
+                      color: widget.badgeColor?.withAlpha(50),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      badge!,
+                      widget.badge!,
                       style: TextStyle(
-                        color: badgeColor,
+                        color: widget.badgeColor,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -72,9 +118,17 @@ class DashboardCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(title, style: AppTextStyles.cardTitle),
+            Text(widget.title, style: AppTextStyles.cardTitle),
             const SizedBox(height: 4),
-            Text(value, style: AppTextStyles.cardValue),
+            AnimatedBuilder(
+              animation: _countAnimation,
+              builder: (context, child) {
+                return Text(
+                  _countAnimation.value.toStringAsFixed(0),
+                  style: AppTextStyles.cardValue,
+                );
+              },
+            ),
           ],
         ),
       ),
