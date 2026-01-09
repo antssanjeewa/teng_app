@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -108,7 +109,10 @@ class LocationListView extends StatelessWidget {
                   icon: Icons.store,
                   status: "Service Due",
                   statusColor: Colors.orangeAccent,
-                  onTap: () => context.go('/locations/RO-2023-089'),
+                  onTap: () => context.goNamed(
+                    RouteNames.locationDetail,
+                    pathParameters: {'id': 'RO-2023-089'},
+                  ),
                 ),
                 _buildInstallCard(
                   title: "Kandy City Hospital",
@@ -118,7 +122,10 @@ class LocationListView extends StatelessWidget {
                   icon: Icons.local_hospital,
                   status: "Under Warranty",
                   statusColor: Colors.blueAccent,
-                  onTap: () => context.go('/locations/RO-2023-156'),
+                  onTap: () => context.goNamed(
+                    RouteNames.locationDetail,
+                    pathParameters: {'id': 'RO-2023-156'},
+                  ),
                 ),
                 _buildInstallCard(
                   title: "Villa Hotels",
@@ -128,7 +135,10 @@ class LocationListView extends StatelessWidget {
                   icon: Icons.apartment,
                   status: "Active",
                   statusColor: Colors.greenAccent,
-                  onTap: () => context.go('/locations/RO-2022-045'),
+                  onTap: () => context.goNamed(
+                    RouteNames.locationDetail,
+                    pathParameters: {'id': 'RO-2022-045'},
+                  ),
                 ),
                 _buildInstallCard(
                   title: "Nugegoda Supermarket",
@@ -138,7 +148,10 @@ class LocationListView extends StatelessWidget {
                   icon: Icons.shopping_cart,
                   status: "Service Due",
                   statusColor: Colors.orangeAccent,
-                  onTap: () => context.go('/locations/RO-2021-012'),
+                  onTap: () => context.goNamed(
+                    RouteNames.locationDetail,
+                    pathParameters: {'id': 'RO-2021-012'},
+                  ),
                 ),
               ],
             ),

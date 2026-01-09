@@ -9,8 +9,11 @@ class RouteNames {
   // Main shell (bottom navigation)
   static const String home = '/';
   static const String jobs = '/jobs';
+
   static const String locations = '/locations';
-  static const String locationDetail = '/locations/:id';
+  static const String locationCreate = '/locations/create';
+  static const String locationDetail = 'view/:id';
+
   static const String stock = '/stock';
   static const String profile = '/profile';
 }

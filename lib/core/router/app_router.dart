@@ -1,3 +1,4 @@
+import 'package:Tisera_Engineering/presentation/features/locations/views/location_create_view.dart';
 import 'package:Tisera_Engineering/presentation/features/locations/views/location_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,12 @@ class AppRouter {
                 builder: (context, state) => const LocationListView(),
                 routes: [
                   GoRoute(
-                    path: ':id',
+                    path: 'create',
+                    name: RouteNames.locationCreate,
+                    builder: (context, state) => LocationCreateView(),
+                  ),
+                  GoRoute(
+                    path: 'view/:id',
                     name: RouteNames.locationDetail,
                     builder: (context, state) {
                       final id = state.pathParameters['id']!;
