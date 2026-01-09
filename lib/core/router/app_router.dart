@@ -1,3 +1,4 @@
+import 'package:Tisera_Engineering/presentation/features/jobs/views/job_create_view.dart';
 import 'package:Tisera_Engineering/presentation/features/locations/views/location_create_view.dart';
 import 'package:Tisera_Engineering/presentation/features/locations/views/location_details_view.dart';
 import 'package:flutter/material.dart';
@@ -90,6 +91,13 @@ class AppRouter {
             path: RouteNames.jobs,
             name: RouteNames.jobs,
             builder: (context, state) => const JobsView(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                name: RouteNames.jobCreate,
+                builder: (context, state) => JobCreateView(),
+              ),
+            ],
           ),
           GoRoute(
             path: RouteNames.stock,

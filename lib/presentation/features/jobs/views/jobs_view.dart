@@ -1,4 +1,6 @@
+import 'package:Tisera_Engineering/core/router/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class JobsView extends StatelessWidget {
   const JobsView({super.key});
@@ -26,8 +28,14 @@ class JobsView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: CircleAvatar(
-              backgroundColor: primaryBlue.withOpacity(0.1),
-              child: const Icon(Icons.add, color: primaryBlue),
+              backgroundColor: primaryBlue.withAlpha(15),
+              child: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  context.pushNamed(RouteNames.jobCreate);
+                },
+                color: primaryBlue,
+              ),
             ),
           ),
         ],
@@ -213,7 +221,7 @@ class JobsView extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: statusColor.withAlpha(15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -282,7 +290,7 @@ class JobsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     image: const DecorationImage(
                       image: NetworkImage(
-                        'hhttps://picsum.photos/200/300',
+                        'https://picsum.photos/200/300',
                       ), // Replace with RO unit image
                       fit: BoxFit.cover,
                     ),

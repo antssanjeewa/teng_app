@@ -156,7 +156,14 @@ class _SiteLocation extends StatelessWidget {
           hint: 'Select District',
           value: vm.selectedDistrict,
           onChanged: vm.setDistrict,
-          items: const [],
+          items: vm.districts
+              .map(
+                (d) => DropdownMenuItem<String>(
+                  value: d,
+                  child: Text(d, style: const TextStyle(color: Colors.white)),
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -179,7 +186,14 @@ class _SystemDetails extends StatelessWidget {
           hint: 'Select Model',
           value: vm.selectedModel,
           onChanged: vm.setModel,
-          items: const [],
+          items: vm.models
+              .map(
+                (m) => DropdownMenuItem<String>(
+                  value: m,
+                  child: Text(m, style: const TextStyle(color: Colors.white)),
+                ),
+              )
+              .toList(),
         ),
         Spacing.v16,
         _DateField(vm),
@@ -219,7 +233,10 @@ class _SaveButton extends StatelessWidget {
     if (!formKey.currentState!.validate()) return;
 
     try {
-      await vm.saveInstallation();
+      final success = await vm.saveInstallation();
+      if (success) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       ScaffoldMessenger.of(
         context,

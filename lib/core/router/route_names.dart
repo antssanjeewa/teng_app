@@ -8,7 +8,9 @@ class RouteNames {
 
   // Main shell (bottom navigation)
   static const String home = '/';
+
   static const String jobs = '/jobs';
+  static const String jobCreate = '/jobs/create';
 
   static const String locations = '/locations';
   static const String locationCreate = '/locations/create';

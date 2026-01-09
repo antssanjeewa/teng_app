@@ -9,7 +9,9 @@ import '../../data/datasources/remote/firebase_auth_service.dart';
 // import '../../data/repositories/user_repository_impl.dart';
 import '../../data/datasources/remote/firestore_service.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/job_repository_impl.dart';
 import '../../data/repositories/location_repository_impl.dart';
+import '../../domain/repositories/job_repository.dart';
 import '../../domain/repositories/location_repository.dart';
 // import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -17,6 +19,7 @@ import '../../domain/repositories/auth_repository.dart';
 
 import '../../presentation/features/auth/viewModels/login_view_model.dart';
 import '../../presentation/features/locations/viewmodels/location_create_view_modal.dart';
+import '../../presentation/features/jobs/viewmodel/job_create_viewmodel.dart';
 
 class ProviderSetup {
   ProviderSetup._();
@@ -47,6 +50,10 @@ class ProviderSetup {
         firestoreService: context.read<FirestoreService>(),
       ),
     ),
+    Provider<JobRepository>(
+      create: (context) =>
+          JobRepositoryImpl(firestoreService: context.read<FirestoreService>()),
+    ),
 
     // Provider<UserRepository>(create: (context) => UserRepositoryImpl()),
 
@@ -69,6 +76,11 @@ class ProviderSetup {
       create: (context) => LocationCreateViewModel(
         repository: context.read<LocationRepository>(),
       ),
+    ),
+
+    ChangeNotifierProvider<JobCreateViewModel>(
+      create: (context) =>
+          JobCreateViewModel(repository: context.read<JobRepository>()),
     ),
   ];
 }

@@ -31,6 +31,18 @@ class LocationCreateViewModel extends ChangeNotifier {
   String? selectedDistrict;
   String? selectedModel;
 
+  // Dropdown data (static for now; can be loaded from repository or API later)
+  final List<String> districts = [
+    'Colombo',
+    'Gampaha',
+    'Kandy',
+    'Galle',
+    'Jaffna',
+    'Matara',
+  ];
+
+  final List<String> models = ['RO-100', 'RO-200', 'RO-500', 'RO-1000'];
+
   /* -------------------------------------------------------------------------- */
   /*                                  UI STATE                                   */
   /* -------------------------------------------------------------------------- */
