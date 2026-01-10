@@ -1,6 +1,6 @@
-import 'package:Tisera_Engineering/core/router/route_names.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../../../core/router/pages.dart';
 
 class JobsView extends StatelessWidget {
   const JobsView({super.key});
@@ -31,9 +31,7 @@ class JobsView extends StatelessWidget {
               backgroundColor: primaryBlue.withAlpha(15),
               child: IconButton(
                 icon: Icon(Icons.add),
-                onPressed: () {
-                  context.pushNamed(RouteNames.jobCreate);
-                },
+                onPressed: () => Pages.jobCreate.go(context),
                 color: primaryBlue,
               ),
             ),

@@ -22,6 +22,7 @@ import '../../domain/repositories/auth_repository.dart';
 
 import '../../presentation/features/auth/viewModels/login_view_model.dart';
 import '../../presentation/features/locations/viewmodels/location_create_view_modal.dart';
+import '../../presentation/features/locations/viewmodels/location_list_viewmodel.dart';
 import '../../presentation/features/jobs/viewmodel/job_create_viewmodel.dart';
 
 class ProviderSetup {
@@ -41,7 +42,6 @@ class ProviderSetup {
     ChangeNotifierProxyProvider<AuthService, DataProvider>(
       create: (_) => DataProvider(),
       update: (context, auth, data) {
-        // If the user just logged in and we haven't initialized yet, start fetching!
         if (auth.isAuthenticated && data != null && !data.isInitialized) {
           data.initializeData();
         }
@@ -62,6 +62,7 @@ class ProviderSetup {
     Provider<LocationRepository>(
       create: (context) => LocationRepositoryImpl(
         firestoreService: context.read<FirestoreService>(),
+        dataProvider: context.read<DataProvider>(),
       ),
     ),
 
@@ -98,6 +99,11 @@ class ProviderSetup {
       create: (context) => LocationCreateViewModel(
         repository: context.read<LocationRepository>(),
       ),
+    ),
+
+    ChangeNotifierProvider<LocationListViewModel>(
+      create: (context) =>
+          LocationListViewModel(repository: context.read<LocationRepository>()),
     ),
 
     ChangeNotifierProvider<JobCreateViewModel>(

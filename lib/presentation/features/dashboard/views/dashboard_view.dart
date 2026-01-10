@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/pages.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/router/route_names.dart';
 import '../widgets/greeting_section.dart';
 import '../widgets/schedule_header.dart';
 import '../widgets/dashboard_app_bar.dart';
@@ -41,8 +40,7 @@ class DashboardView extends StatelessWidget {
                   value: 1240,
                   icon: Icons.water_drop,
                   color: AppColors.primary,
-                  onTap: () =>
-                      GoRouter.of(context).goNamed(RouteNames.locations),
+                  onTap: () => Pages.locations.go(context),
                 ),
                 DashboardCard(
                   title: 'PENDING REPAIRS',
@@ -51,14 +49,14 @@ class DashboardView extends StatelessWidget {
                   color: AppColors.urgent,
                   badge: 'URGENT',
                   badgeColor: AppColors.urgent,
-                  onTap: () => GoRouter.of(context).go(RouteNames.jobs),
+                  onTap: () => Pages.jobs.go(context),
                 ),
                 DashboardCard(
                   title: 'DUE SOON',
                   value: 3,
                   icon: Icons.calendar_today,
                   color: AppColors.warning,
-                  onTap: () => GoRouter.of(context).go(RouteNames.jobs),
+                  onTap: () => Pages.jobs.go(context),
                 ),
                 DashboardCard(
                   title: 'INVENTORY',
@@ -66,7 +64,7 @@ class DashboardView extends StatelessWidget {
                   icon: Icons.inventory,
                   badge: 'LOW',
                   badgeColor: AppColors.low,
-                  onTap: () => GoRouter.of(context).go(RouteNames.stock),
+                  onTap: () => Pages.stock.go(context),
                 ),
               ],
             ),
@@ -76,9 +74,7 @@ class DashboardView extends StatelessWidget {
 
             Spacing.v16,
             InkWell(
-              onTap: () {
-                GoRouter.of(context).go(RouteNames.locationCreate);
-              },
+              onTap: () => Pages.locationCreate.go(context),
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -139,7 +135,7 @@ class DashboardView extends StatelessWidget {
                     subtitle: 'Create service ticket',
                     icon: Icons.build_circle,
                     color: AppColors.urgent,
-                    onTap: () => GoRouter.of(context).go(RouteNames.jobs),
+                    onTap: () => Pages.jobs.go(context),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -149,7 +145,7 @@ class DashboardView extends StatelessWidget {
                     subtitle: 'View spare parts',
                     icon: Icons.assignment,
                     color: AppColors.secondary,
-                    onTap: () => GoRouter.of(context).go(RouteNames.stock),
+                    onTap: () => Pages.stock.go(context),
                   ),
                 ),
               ],

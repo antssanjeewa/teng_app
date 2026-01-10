@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/router/route_names.dart';
+import '../../../../core/router/pages.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../viewmodels/location_list_viewmodel.dart';
@@ -44,7 +43,7 @@ class _LocationListViewState extends State<LocationListView> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: FloatingActionButton.small(
-              onPressed: () => context.goNamed(RouteNames.locationCreate),
+              onPressed: () => Pages.locationCreate.go(context),
               backgroundColor: AppColors.accent,
               child: const Icon(Icons.add, color: Colors.white),
             ),
@@ -166,9 +165,9 @@ class _LocationListViewState extends State<LocationListView> {
                             icon: Icons.store,
                             status: 'active',
                             statusColor: Colors.greenAccent,
-                            onTap: () => context.goNamed(
-                              RouteNames.locationDetail,
-                              pathParameters: {'id': id},
+                            onTap: () => Pages.locationDetails.go(
+                              context,
+                              params: {'id': id},
                             ),
                           );
                         },

@@ -1,13 +1,13 @@
-import 'package:Tisera_Engineering/data/datasources/local/data_provider.dart';
-import 'package:Tisera_Engineering/presentation/features/jobs/views/job_create_view.dart';
-import 'package:Tisera_Engineering/presentation/features/locations/views/location_create_view.dart';
-import 'package:Tisera_Engineering/presentation/features/locations/views/location_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/datasources/local/data_provider.dart';
 import '../../data/datasources/remote/firebase_auth_service.dart';
+import '../../presentation/features/jobs/views/job_create_view.dart';
+import '../../presentation/features/locations/views/location_create_view.dart';
+import '../../presentation/features/locations/views/location_details_view.dart';
 import '../../presentation/features/locations/views/location_list_view.dart';
-import 'route_names.dart';
+import 'pages.dart';
 
 // Feature views
 import '../../presentation/common/splash_screen.dart';
@@ -18,21 +18,21 @@ import '../../presentation/features/profile/views/profile_view.dart';
 import '../../presentation/features/auth/views/login_view.dart';
 
 class AppRouter {
-  final AuthService authService;
-  final DataProvider dataProvider;
+  static AuthService? _authService;
+  static DataProvider? _dataProvider;
 
-  AppRouter(this.authService, this.dataProvider);
+  AppRouter(AuthService auth, DataProvider data) {
+    _authService = auth;
+    _dataProvider = data;
+  }
 
-  static final GlobalKey<NavigatorState> _rootNavigatorKey =
-      GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey();
+  final GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey();
 
-  static final GlobalKey<NavigatorState> _shellNavigatorKey =
-      GlobalKey<NavigatorState>();
-
-  GoRouter get router => GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    refreshListenable: Listenable.merge([authService, dataProvider]),
-    initialLocation: RouteNames.splash,
+  late final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
+    refreshListenable: Listenable.merge([_authService!, _dataProvider!]),
+    initialLocation: Pages.splash.toPath(),
     debugLogDiagnostics: true,
 
     routes: [
@@ -40,15 +40,15 @@ class AppRouter {
       /// AUTH ROUTES (No Bottom Nav)
       /// -------------------------------
       GoRoute(
-        path: RouteNames.login,
-        name: RouteNames.login,
-        parentNavigatorKey: _rootNavigatorKey,
+        path: Pages.login.toPath(),
+        name: Pages.login.toPathName(),
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const LoginView(),
       ),
       GoRoute(
-        path: RouteNames.splash,
-        name: RouteNames.splash,
-        parentNavigatorKey: _rootNavigatorKey,
+        path: Pages.splash.toPath(),
+        name: Pages.splash.toPathName(),
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SplashScreen(),
       ),
 
@@ -56,29 +56,32 @@ class AppRouter {
       /// MAIN APP (Bottom Navigation)
       /// -------------------------------
       ShellRoute(
-        navigatorKey: _shellNavigatorKey,
+        navigatorKey: shellNavigatorKey,
         builder: (context, state, child) {
           return _MainScaffold(child: child);
         },
         routes: [
           GoRoute(
-            path: RouteNames.home,
-            name: RouteNames.home,
+            path: Pages.home.toPath(),
+            name: Pages.home.toPathName(),
             builder: (context, state) => const DashboardView(),
             routes: [
               GoRoute(
-                path: 'locations',
-                name: RouteNames.locations,
+                path: Pages.locations.toPath(isSubRoute: true),
+                name: Pages.locations.toPathName(),
                 builder: (context, state) => const LocationListView(),
                 routes: [
                   GoRoute(
-                    path: 'create',
-                    name: RouteNames.locationCreate,
+                    path: Pages.locationCreate.toPath(isSubRoute: true),
+                    name: Pages.locationCreate.toPathName(),
                     builder: (context, state) => LocationCreateView(),
                   ),
                   GoRoute(
-                    path: 'view/:id',
-                    name: RouteNames.locationDetail,
+                    path: Pages.locationDetails.toPath(
+                      isSubRoute: true,
+                      pathParam: 'id',
+                    ),
+                    name: Pages.locationDetails.toPathName(),
                     builder: (context, state) {
                       final id = state.pathParameters['id']!;
                       return LocationDetailsView(id);
@@ -89,25 +92,25 @@ class AppRouter {
             ],
           ),
           GoRoute(
-            path: RouteNames.jobs,
-            name: RouteNames.jobs,
+            path: Pages.jobs.toPath(),
+            name: Pages.jobs.toPathName(),
             builder: (context, state) => const JobsView(),
             routes: [
               GoRoute(
-                path: 'create',
-                name: RouteNames.jobCreate,
+                path: Pages.jobCreate.toPath(isSubRoute: true),
+                name: Pages.jobCreate.toPathName(),
                 builder: (context, state) => JobCreateView(),
               ),
             ],
           ),
           GoRoute(
-            path: RouteNames.stock,
-            name: RouteNames.stock,
+            path: Pages.stock.toPath(),
+            name: Pages.stock.toPathName(),
             builder: (context, state) => const StockView(),
           ),
           GoRoute(
-            path: RouteNames.profile,
-            name: RouteNames.profile,
+            path: Pages.profile.toPath(),
+            name: Pages.profile.toPathName(),
             builder: (context, state) => const ProfileView(),
           ),
         ],
@@ -118,18 +121,33 @@ class AppRouter {
     /// AUTH GUARD (Firebase-ready)
     /// -------------------------------
     redirect: (context, state) {
-      final bool loggedIn = authService.isAuthenticated;
-      final bool isLoggingIn = state.matchedLocation == RouteNames.login;
-      final bool isSplashing = state.matchedLocation == RouteNames.splash;
-      // 1. If not logged in and not on the login page, force go to /login
-      if (!loggedIn) return RouteNames.login;
+      final bool loggedIn = _authService!.isAuthenticated;
+      final bool isInitialized = _dataProvider!.isInitialized;
 
-      if (!dataProvider.isInitialized) return RouteNames.splash;
+      final String location = state.matchedLocation;
+      final bool isLoggingIn = location == Pages.login.toPath();
+      final bool isSplashing = location == Pages.splash.toPath();
 
-      // 2. If logged in and trying to go to login page, redirect to /home
-      if (loggedIn && (isLoggingIn || isSplashing)) return RouteNames.home;
+      // 1. NOT LOGGED IN
+      if (!loggedIn) {
+        // If already on login, stay there (null). Otherwise, go to login.
+        return isLoggingIn ? null : Pages.login.toPath();
+      }
 
-      // 3. No redirect needed
+      // 2. LOGGED IN BUT DATA NOT READY
+      if (!isInitialized) {
+        // If already on splash, stay there (null). Otherwise, go to splash.
+        return isSplashing ? null : Pages.splash.toPath();
+      }
+
+      // 3. LOGGED IN & DATA READY
+      // If they are stuck on login or splash, move them to home.
+      if (isLoggingIn || isSplashing) {
+        return Pages.home.toPath();
+      }
+
+      // 4. PREVENT ACCIDENTAL RE-REDIRECTS
+      // If the user is already on a valid app page (Home, Jobs, etc.), return null.
       return null;
     },
   );
@@ -144,35 +162,29 @@ class _MainScaffold extends StatelessWidget {
   const _MainScaffold({required this.child});
 
   int _calculateIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).matchedLocation;
+    // final String location = GoRouterState.of(context).matchedLocation;
+    const tabs = [Pages.home, Pages.jobs, Pages.stock, Pages.profile];
 
-    switch (location) {
-      case RouteNames.home:
-        return 0;
-      case RouteNames.jobs:
-        return 1;
-      case RouteNames.stock:
-        return 2;
-      case RouteNames.profile:
-        return 3;
-      default:
-        return 0;
-    }
+    final location = GoRouterState.of(context).uri.toString();
+    int selectedIndex = tabs.indexWhere(
+      (page) => location.startsWith(page.toPath()),
+    );
+    return selectedIndex = selectedIndex < 0 ? 0 : selectedIndex;
   }
 
   void _onTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-        context.go(RouteNames.home);
+        Pages.home.go(context);
         break;
       case 1:
-        context.go(RouteNames.jobs);
+        Pages.jobs.go(context);
         break;
       case 2:
-        context.go(RouteNames.stock);
+        Pages.stock.go(context);
         break;
       case 3:
-        context.go(RouteNames.profile);
+        Pages.profile.go(context);
         break;
     }
   }

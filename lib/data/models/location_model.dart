@@ -75,6 +75,8 @@ class LocationModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
+      'name': name,
       'customerName': customerName,
       'customerContact': customerContact,
       'donorName': donorName,
@@ -82,6 +84,7 @@ class LocationModel {
       'address': address,
       'district': district,
       'model': model,
+      'status': status,
       'installationDate': installationDate.toIso8601String(),
       'estimatedCost': estimatedCost,
       'specialInstructions': specialInstructions,
@@ -91,7 +94,7 @@ class LocationModel {
   Location toEntity() {
     return Location(
       id: id,
-      title: customerName,
+      title: name,
       subtitle: address,
       fullAddress: address,
       date: DateFormat('dd MMM yyyy').format(installationDate),
