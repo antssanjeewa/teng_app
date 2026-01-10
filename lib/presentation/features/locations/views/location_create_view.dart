@@ -68,9 +68,9 @@ class _Content extends StatelessWidget {
         key: formKey,
         child: Column(
           children: [
-            _CustomerDetails(vm),
-            Spacing.v32,
             _SiteLocation(vm),
+            Spacing.v32,
+            _CustomerDetails(vm),
             Spacing.v32,
             _SystemDetails(vm, formKey),
             Spacing.v32,
@@ -96,7 +96,7 @@ class _CustomerDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SectionCard(
       children: [
-        const _SectionHeader(Icons.person, 'CUSTOMER DETAILS'),
+        const _SectionHeader(Icons.person, 'USER DETAILS'),
         _TextField(
           label: 'CUSTOMER NAME',
           hint: 'Enter full name',
@@ -143,6 +143,12 @@ class _SiteLocation extends StatelessWidget {
     return _SectionCard(
       children: [
         const _SectionHeader(Icons.location_on, 'SITE LOCATION'),
+        _TextField(
+          label: 'LOCATION NAME',
+          hint: "Enter name",
+          controller: vm.nameController,
+        ),
+        Spacing.v16,
         _MultilineField(
           label: 'ADDRESS',
           hint: 'Street name, City',
@@ -312,7 +318,8 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark.withAlpha(125),
+        color: AppColors.surfaceDark.withAlpha(80),
+        border: Border.all(color: AppColors.surfaceDark, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(children: children),
@@ -334,14 +341,14 @@ class _SectionHeader extends StatelessWidget {
       child: Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: AppColors.accent, size: 18),
+            Icon(icon, color: AppColors.accent, size: 24),
             Spacing.h8,
           ],
           Text(
             title,
             style: TextStyle(
               color: isSub ? AppColors.textMuted : AppColors.accent,
-              fontSize: 12,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),

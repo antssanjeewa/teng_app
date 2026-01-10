@@ -49,12 +49,22 @@ class FirestoreService {
 
   Future<String> createDocument(String path, Map<String, dynamic> data) async {
     try {
-      final docRef = await _firestore.collection(path).add({
+      // 1. Determine the ID first
+      final String docId =
+          data['id']?.toString() ?? _firestore.collection(path).doc().id;
+
+      // 2. Prepare payload (Ensuring the ID is also INSIDE the data)
+      final payload = {
         ...data,
+        'id': docId, // Now every document has its ID inside its fields
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
-      });
-      return docRef.id; // Return the ID so you can add it to your local state
+      };
+
+      // 3. Save using .set() so we can use our pre-determined ID
+      await _firestore.collection(path).doc(docId).set(payload);
+
+      return docId;
     } on FirebaseException catch (e) {
       throw Exception('Create failed: ${e.message}');
     }

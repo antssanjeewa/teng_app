@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../domain/entities/location_form.dart';
 import '../../../../domain/repositories/location_repository.dart';
 
 class LocationCreateViewModel extends ChangeNotifier {
@@ -18,6 +19,7 @@ class LocationCreateViewModel extends ChangeNotifier {
   final donorNameController = TextEditingController();
   final donorContactController = TextEditingController();
 
+  final nameController = TextEditingController();
   final addressController = TextEditingController();
   final estimatedCostController = TextEditingController();
   final specialInstructionsController = TextEditingController();
@@ -141,19 +143,19 @@ class LocationCreateViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final payload = {
-        'customerName': customerNameController.text.trim(),
-        'customerContact': customerContactController.text.trim(),
-        'donorName': donorNameController.text.trim(),
-        'donorContact': donorContactController.text.trim(),
-        'address': addressController.text.trim(),
-        'district': selectedDistrict,
-        'model': selectedModel,
-        'installationDate': _installationDate!.toIso8601String(),
-        'estimatedCost': estimatedCostController.text.trim(),
-        'specialInstructions': specialInstructionsController.text.trim(),
-        'createdAt': DateTime.now().toIso8601String(),
-      };
+      final LocationForm payload = LocationForm(
+        name: nameController.text.trim(),
+        customerName: customerNameController.text.trim(),
+        customerContact: customerContactController.text.trim(),
+        donorName: donorNameController.text.trim(),
+        donorContact: donorContactController.text.trim(),
+        address: addressController.text.trim(),
+        district: selectedDistrict!,
+        model: selectedModel!,
+        installationDate: _installationDate!,
+        estimatedCost: estimatedCostController.text.trim(),
+        specialInstructions: specialInstructionsController.text.trim(),
+      );
 
       await _repository.addInstallation(payload);
       return true;
@@ -178,6 +180,7 @@ class LocationCreateViewModel extends ChangeNotifier {
     customerContactController.dispose();
     donorNameController.dispose();
     donorContactController.dispose();
+    nameController.dispose();
     addressController.dispose();
     estimatedCostController.dispose();
     specialInstructionsController.dispose();
