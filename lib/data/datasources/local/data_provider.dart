@@ -18,8 +18,6 @@ class DataProvider extends ChangeNotifier {
 
   // 1. Initial Fetch: Call this once when the app/user is ready
   Future<void> initializeData() async {
-    notifyListeners();
-
     try {
       // Fetch all data in parallel
       final results = await Future.wait([

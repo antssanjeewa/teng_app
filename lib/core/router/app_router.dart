@@ -18,7 +18,10 @@ import '../../presentation/features/profile/views/profile_view.dart';
 import '../../presentation/features/auth/views/login_view.dart';
 
 class AppRouter {
-  AppRouter._();
+  final AuthService authService;
+  final DataProvider dataProvider;
+
+  AppRouter(this.authService, this.dataProvider);
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -26,11 +29,7 @@ class AppRouter {
   static final GlobalKey<NavigatorState> _shellNavigatorKey =
       GlobalKey<NavigatorState>();
 
-  // Auth service instance for router authentication state
-  static final AuthService authService = AuthService();
-  static final DataProvider dataProvider = DataProvider();
-
-  static final GoRouter router = GoRouter(
+  GoRouter get router => GoRouter(
     navigatorKey: _rootNavigatorKey,
     refreshListenable: Listenable.merge([authService, dataProvider]),
     initialLocation: RouteNames.splash,
@@ -122,11 +121,10 @@ class AppRouter {
       final bool loggedIn = authService.isAuthenticated;
       final bool isLoggingIn = state.matchedLocation == RouteNames.login;
       final bool isSplashing = state.matchedLocation == RouteNames.splash;
-
-      if (!dataProvider.isInitialized) return RouteNames.splash;
-
       // 1. If not logged in and not on the login page, force go to /login
       if (!loggedIn) return RouteNames.login;
+
+      if (!dataProvider.isInitialized) return RouteNames.splash;
 
       // 2. If logged in and trying to go to login page, redirect to /home
       if (loggedIn && (isLoggingIn || isSplashing)) return RouteNames.home;
