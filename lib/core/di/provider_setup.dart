@@ -22,6 +22,7 @@ import '../../domain/repositories/auth_repository.dart';
 
 import '../../presentation/features/auth/viewModels/login_view_model.dart';
 import '../../presentation/features/locations/viewmodels/location_create_view_modal.dart';
+import '../../presentation/features/locations/viewmodels/location_details_viewmodel.dart';
 import '../../presentation/features/locations/viewmodels/location_list_viewmodel.dart';
 import '../../presentation/features/jobs/viewmodel/job_create_viewmodel.dart';
 
@@ -97,6 +98,12 @@ class ProviderSetup {
 
     ChangeNotifierProvider<LocationCreateViewModel>(
       create: (context) => LocationCreateViewModel(
+        repository: context.read<LocationRepository>(),
+      ),
+    ),
+
+    ChangeNotifierProvider<LocationDetailsViewModel>(
+      create: (context) => LocationDetailsViewModel(
         repository: context.read<LocationRepository>(),
       ),
     ),

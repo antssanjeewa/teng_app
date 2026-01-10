@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/entities/location.dart';
@@ -46,7 +47,7 @@ class LocationModel {
       address: map['address'] ?? 'a',
       district: map['district'] ?? '',
       model: map['model'] ?? '',
-      status: map['status'] ?? 'active',
+      status: map['status'] ?? 'Active',
       installationDate: DateTime.parse(
         map['installationDate'] ?? DateTime.now().toIso8601String(),
       ),
@@ -66,7 +67,7 @@ class LocationModel {
       address: entity.address,
       district: entity.district,
       model: entity.model,
-      status: 'active',
+      status: 'Active',
       installationDate: entity.installationDate,
       estimatedCost: entity.estimatedCost,
       specialInstructions: entity.specialInstructions,
@@ -95,7 +96,12 @@ class LocationModel {
     return Location(
       id: id,
       title: name,
-      subtitle: address,
+      status: status,
+      statusColor: status.toLowerCase() == 'active'
+          ? Colors.green
+          : status.toLowerCase() == 'service due'
+          ? Colors.orange
+          : Colors.red,
       fullAddress: address,
       date: DateFormat('dd MMM yyyy').format(installationDate),
     );

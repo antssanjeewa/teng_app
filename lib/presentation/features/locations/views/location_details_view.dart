@@ -1,13 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
+import '../../../../domain/entities/location.dart';
+import '../viewmodels/location_details_viewmodel.dart';
 
-class LocationDetailsView extends StatelessWidget {
-  const LocationDetailsView(String id, {super.key});
+class LocationDetailsView extends StatefulWidget {
+  final String id;
+  const LocationDetailsView(this.id, {super.key});
+
+  @override
+  State<LocationDetailsView> createState() => _LocationDetailsViewState();
+
+  static Widget _buildInfoColumn(String label, String value, Color valueColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Spacing.v4,
+        Text(
+          value,
+          style: TextStyle(
+            color: valueColor,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LocationDetailsViewState extends State<LocationDetailsView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Use .read because we are in a callback, not the build method
+        context.read<LocationDetailsViewModel>().loadById(widget.id);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<LocationDetailsViewModel>();
+
+    // 3. UI State Handling
+    if (vm.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final location = vm.location;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -40,13 +94,13 @@ class LocationDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeaderCard(),
+                _buildHeaderCard(location!),
                 Spacing.v24,
-                _buildMapSection(),
+                _buildMapSection(location),
                 Spacing.v32,
                 _buildSectionTitle("Customer Information"),
                 Spacing.v12,
-                _buildCustomerCard(),
+                _buildCustomerCard(location),
                 Spacing.v32,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,8 +133,7 @@ class LocationDetailsView extends StatelessWidget {
   }
 
   // --- UI Components ---
-
-  Widget _buildHeaderCard() {
+  Widget _buildHeaderCard(Location location) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -97,7 +150,7 @@ class LocationDetailsView extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: AppColors.success.withAlpha(15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -120,12 +173,12 @@ class LocationDetailsView extends StatelessWidget {
           Spacing.v12,
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Tisera RO-500 Industrial",
+                      location.title,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -157,8 +210,12 @@ class LocationDetailsView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInfoColumn("INSTALLED", "12 Jan 2023", Colors.white),
-              _buildInfoColumn(
+              LocationDetailsView._buildInfoColumn(
+                "INSTALLED",
+                location.date,
+                Colors.white,
+              ),
+              LocationDetailsView._buildInfoColumn(
                 "NEXT SERVICE",
                 "15 Oct 2024",
                 AppColors.warning,
@@ -170,34 +227,32 @@ class LocationDetailsView extends StatelessWidget {
     );
   }
 
-  static Widget _buildInfoColumn(String label, String value, Color valueColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.textMuted,
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Spacing.v4,
-        Text(
-          value,
-          style: TextStyle(
-            color: valueColor,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMapSection() {
+  Widget _buildMapSection(Location location) {
     return Column(
       children: [
+        // Container(
+        //   height: 180,
+        //   width: double.infinity,
+        //   // ClipRRect is needed to keep the map inside the border radius
+        //   child: ClipRRect(
+        //     borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        //     child: GoogleMap(
+        //       initialCameraPosition: CameraPosition(
+        //         target: LatLng(location.lat, location.lng),
+        //         zoom: 15,
+        //       ),
+        //       markers: {
+        //         Marker(
+        //           markerId: const MarkerId('location'),
+        //           position: LatLng(location.lat, location.lng),
+        //         ),
+        //       },
+        //       // Disable gestures if you only want it to be a "preview"
+        //       zoomControlsEnabled: false,
+        //       myLocationButtonEnabled: false,
+        //     ),
+        //   ),
+        // ),
         Container(
           height: 180,
           width: double.infinity,
@@ -205,7 +260,7 @@ class LocationDetailsView extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             image: const DecorationImage(
               image: NetworkImage(
-                'https://picsum.photos/200/300',
+                'https://picsum.photos/100/150',
               ), // Replace with actual Google Map Static Image
               fit: BoxFit.cover,
             ),
@@ -215,12 +270,13 @@ class LocationDetailsView extends StatelessWidget {
           ),
         ),
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
             color: Color(0xFF1C2A3A),
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -232,7 +288,7 @@ class LocationDetailsView extends StatelessWidget {
                 ),
               ),
               Text(
-                "No. 45, Temple Road, Kandy",
+                location.fullAddress,
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
             ],
@@ -259,7 +315,7 @@ class LocationDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerCard() {
+  Widget _buildCustomerCard(Location location) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceDark,
@@ -276,7 +332,7 @@ class LocationDetailsView extends StatelessWidget {
           _buildCustomerTile(
             Icons.phone,
             "MOBILE",
-            "+94 77 123 4567",
+            location.status,
             isPhone: true,
           ),
           const Divider(height: 1, color: Colors.white10),

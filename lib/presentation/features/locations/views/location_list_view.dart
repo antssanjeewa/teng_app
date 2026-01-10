@@ -4,28 +4,21 @@ import 'package:provider/provider.dart';
 import '../../../../core/router/pages.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
+import '../../../../domain/entities/location.dart';
 import '../viewmodels/location_list_viewmodel.dart';
 
-class LocationListView extends StatefulWidget {
+class LocationListView extends StatelessWidget {
   const LocationListView({super.key});
 
   @override
-  State<LocationListView> createState() => _LocationListViewState();
-}
-
-class _LocationListViewState extends State<LocationListView> {
-  @override
-  void initState() {
-    super.initState();
-    // Load list once on enter
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final vm = context.read<LocationListViewModel>();
-      vm.loadLocations();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final vm = context.read<LocationListViewModel>();
+
+    // Triggers only if not already loading/loaded
+    if (vm.locations.isEmpty && !vm.isLoading) {
+      Future.microtask(() => vm.loadLocations());
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -111,33 +104,7 @@ class _LocationListViewState extends State<LocationListView> {
                 ),
               ),
               Spacing.v16,
-              // _buildInstallCard(
-              //   title: "Villa Hotels",
-              //   id: "RO-2022-045",
-              //   location: "12 Beach Road, Negombo",
-              //   date: "Installed: 22 Nov 2022",
-              //   icon: Icons.apartment,
-              //   status: "Active",
-              //   statusColor: Colors.greenAccent,
-              //   onTap: () => context.goNamed(
-              //     RouteNames.locationDetail,
-              //     pathParameters: {'id': 'RO-2022-045'},
-              //   ),
-              // ),
-              // _buildInstallCard(
-              //   title: "Nugegoda Supermarket",
-              //   id: "RO-2021-012",
-              //   location: "High Level Rd, Nugegoda",
-              //   date: "Installed: 01 Mar 2021",
-              //   icon: Icons.shopping_cart,
-              //   status: "Service Due",
-              //   statusColor: Colors.orangeAccent,
-              //   onTap: () => context.goNamed(
-              //     RouteNames.locationDetail,
-              //     pathParameters: {'id': 'RO-2021-012'},
-              //   ),
-              // ),
-              // Installations List
+
               Expanded(
                 child: vm.isLoading
                     ? const Center(child: CircularProgressIndicator())
@@ -154,17 +121,8 @@ class _LocationListViewState extends State<LocationListView> {
                         itemBuilder: (context, index) {
                           final item = vm.locations[index];
                           final id = item.id as String? ?? 'N/A';
-                          final title = item.title;
-                          final address = item.fullAddress;
-                          final created = item.date;
                           return _buildInstallCard(
-                            title: title,
-                            id: id,
-                            location: address,
-                            date: 'Installed: $created',
-                            icon: Icons.store,
-                            status: 'active',
-                            statusColor: Colors.greenAccent,
+                            item: item,
                             onTap: () => Pages.locationDetails.go(
                               context,
                               params: {'id': id},
@@ -263,13 +221,7 @@ class _LocationListViewState extends State<LocationListView> {
   }
 
   Widget _buildInstallCard({
-    required String title,
-    required String id,
-    required String location,
-    required String date,
-    required IconData icon,
-    required String status,
-    required Color statusColor,
+    required Location item,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -292,7 +244,7 @@ class _LocationListViewState extends State<LocationListView> {
                 color: AppColors.accent.withAlpha(15),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: AppColors.accent),
+              child: Icon(Icons.apartment, color: AppColors.accent),
             ),
             Spacing.h16,
             // Info Section
@@ -305,7 +257,7 @@ class _LocationListViewState extends State<LocationListView> {
                     children: [
                       Expanded(
                         child: Text(
-                          title,
+                          item.title,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -320,13 +272,13 @@ class _LocationListViewState extends State<LocationListView> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
+                          color: item.statusColor.withAlpha(15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          status,
+                          item.status,
                           style: TextStyle(
-                            color: statusColor,
+                            color: item.statusColor,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -335,7 +287,7 @@ class _LocationListViewState extends State<LocationListView> {
                     ],
                   ),
                   Text(
-                    "ID: #$id",
+                    "ID: #${item.id}",
                     style: const TextStyle(color: Colors.white38, fontSize: 12),
                   ),
                   Spacing.v12,
@@ -348,7 +300,7 @@ class _LocationListViewState extends State<LocationListView> {
                       ),
                       Spacing.h4,
                       Text(
-                        location,
+                        item.fullAddress,
                         style: const TextStyle(
                           color: Colors.white38,
                           fontSize: 13,
@@ -366,7 +318,7 @@ class _LocationListViewState extends State<LocationListView> {
                       ),
                       Spacing.h4,
                       Text(
-                        date,
+                        item.date,
                         style: const TextStyle(
                           color: Colors.white38,
                           fontSize: 13,
